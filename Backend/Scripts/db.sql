@@ -1,1 +1,0 @@
--- Establishing connection to MySQL database
