@@ -1,2 +1,1 @@
-# Contains list of libraries to be installed for this project
-
+mysql-connector-python==9.1.0
