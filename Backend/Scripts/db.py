@@ -1,6 +1,15 @@
 import mysql.connector as mysql_connector
 from mysql.connector import errorcode
 from logger import *                                # This imports everything from logger.py file..
+import os
+from dotenv import load_dotenv                      # This imports .env file and all its contents
+
+# parse a .env file and load its variables.
+load_dotenv()
+
+host = os.getenv("host")
+user = os.getenv("user")
+password = os.getenv("password")
 
 class SQLConnection:
     def __init__(self, host, user, password):
@@ -10,14 +19,15 @@ class SQLConnection:
     
     def create_Connection(self, attempts = 3, delay = 2):
         attempt = 1
-
         while attempt <= attempts:
             try:
-                return mysql_connector.connect(
+                self.conn = mysql_connector.connect(
                     host = self.host,
                     user = self.user,
                     password = self.password
                 )
+
+                return f"Connected to MySQL instance: {self.conn}"
             
             except (mysql_connector.Error, IOError) as er:
 
@@ -39,17 +49,42 @@ class SQLConnection:
             
         return None
     
+    def show_databases(self):
+        if self.conn and self.conn.is_connected():
+
+            with self.conn.cursor() as cursor:
+                show_db = cursor.execute("show databases")
+                rows = cursor.fetchall()
+                for row in rows:
+                    print(row)
+            self.conn.close()
+
     def create_Database(self, database):
         self.database = database
-        pass
+
+        # accept conn from create_Connection() function
+        # If connection is established and db is connected
+        if self.conn and self.conn.is_connected():
+
+            with self.conn.cursor() as cursor:
+                db_create = cursor.execute(f"create database {self.database}")
+            self.conn.close()
+    
+    def drop_Database(self, database):
+        self.database = database
+
+        if self.conn and self.conn.is_connected():
+
+            with self.conn.cursor() as cursor:
+                db_drop1 = cursor.execute(f"drop database {self.database}")
+            self.conn.close()
     
     def create_table(self):
         pass
-        # self.create_Connection_obj(conn)
-        # with conn
     
-    def close_Connection(self):
-        pass
 
-conn = SQLConnection("localhost", "root", "12345678")
-print(conn.create_Connection())
+conn = SQLConnection(host, user, password)
+conn.create_Connection()
+# conn.create_Database("test")
+# conn.drop_Database("test1")
+conn.show_databases()
