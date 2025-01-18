@@ -3,14 +3,17 @@ from mysql.connector import errorcode
 from dotenv import load_dotenv                      # This imports .env file and all its contents
 import time, sys, os
 
+# parse a .env file and load its variables.
+load_dotenv()
+
 # Since logger.py is in a different folder, to import this file, 
 # first, add the path to sys.path
 # second, import logger.py
-sys.path.append('/Scripts')
-from logger import *
+log_file = os.getenv("log_file_path")
+logger_file_path = os.path.join(log_file, 'Backend/Scripts')
+sys.path.append(logger_file_path)
 
-# parse a .env file and load its variables.
-load_dotenv()
+from logger import *
 
 host = os.getenv("host")
 user = os.getenv("user")
@@ -91,6 +94,6 @@ class SQLConnection:
 
 conn = SQLConnection(host, user, password)
 conn.create_Connection()
-# conn.create_Database("test")
-# conn.drop_Database("test1")
+# # conn.create_Database("test")
+# # conn.drop_Database("test1")
 conn.show_databases()
