@@ -1,8 +1,13 @@
 import mysql.connector as mysql_connector
 from mysql.connector import errorcode
-from logger import *                                # This imports everything from logger.py file..
-import os
 from dotenv import load_dotenv                      # This imports .env file and all its contents
+import time, sys, os
+
+# Since logger.py is in a different folder, to import this file, 
+# first, add the path to sys.path
+# second, import logger.py
+sys.path.append('/Scripts')
+from logger import *
 
 # parse a .env file and load its variables.
 load_dotenv()
@@ -50,8 +55,8 @@ class SQLConnection:
         return None
     
     def show_databases(self):
-        if self.conn and self.conn.is_connected():
 
+        if self.conn and self.conn.is_connected():
             with self.conn.cursor() as cursor:
                 show_db = cursor.execute("show databases")
                 rows = cursor.fetchall()
@@ -65,7 +70,6 @@ class SQLConnection:
         # accept conn from create_Connection() function
         # If connection is established and db is connected
         if self.conn and self.conn.is_connected():
-
             with self.conn.cursor() as cursor:
                 db_create = cursor.execute(f"create database {self.database}")
             self.conn.close()
@@ -74,12 +78,14 @@ class SQLConnection:
         self.database = database
 
         if self.conn and self.conn.is_connected():
-
             with self.conn.cursor() as cursor:
-                db_drop1 = cursor.execute(f"drop database {self.database}")
+                db_drop = cursor.execute(f"drop database {self.database}")
             self.conn.close()
     
     def create_table(self):
+        pass
+
+    def insert_into_table(self):
         pass
     
 

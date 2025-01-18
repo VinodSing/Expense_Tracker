@@ -1,6 +1,4 @@
 import logging
-import time
-import mysql.connector
 
 # Set up logger
 logger = logging.getLogger(__name__) #Logger name tracks package/module hierachy
@@ -13,4 +11,3 @@ logger.addHandler(stream_Handler)
 # Log output in a file
 file_Handler = logging.FileHandler("/Users/vimita/Documents/Data_Eng_Projects/Expense_Tracker/Backend/log_files/err_log.log") 
 logger.addHandler(file_Handler)
-
