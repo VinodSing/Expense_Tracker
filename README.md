@@ -6,8 +6,3 @@ source ./.venv/bin/activate
 
 # mention the list of libraries installed using pip freeze:
 pip freeze > requirements.txt
-
-# Libraries Used:
------------------
-1- pip install mysql-connector-python   <!-- to install ,usql connector -->
-
