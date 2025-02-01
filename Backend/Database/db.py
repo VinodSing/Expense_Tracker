@@ -1,4 +1,5 @@
 import mysql.connector as mysql_connector
+from mysql.connector import (connection)
 from mysql.connector import errorcode
 from dotenv import load_dotenv                      # This imports .env file and all its contents
 import time, sys, os
@@ -15,26 +16,24 @@ sys.path.append(logger_file_path)
 
 from logger import *
 
-host = os.getenv("host")
-user = os.getenv("user")
-password = os.getenv("password")
-
-class SQLConnection:
+class SQLConnection():
+    # def __init__(self, host=os.getenv("host"), user=os.getenv("user"), password=os.getenv("password")):
     def __init__(self, host, user, password):
         self.host = host
         self.user = user
         self.password = password
-    
+
+        self.conn = connection.MySQLConnection(
+                    user=user,
+                    password=password
+                )
+
+    # Creates a new Connection object...
     def create_Connection(self, attempts = 3, delay = 2):
         attempt = 1
         while attempt <= attempts:
             try:
-                self.conn = mysql_connector.connect(
-                    host = self.host,
-                    user = self.user,
-                    password = self.password
-                )
-
+                self.conn
                 return f"Connected to MySQL instance: {self.conn}"
             
             except (mysql_connector.Error, IOError) as er:
@@ -57,43 +56,56 @@ class SQLConnection:
             
         return None
     
+    # Closes existing connection..
+    def close_connection(self):
+        return self.conn.close()
+    
+    # Show list of MySQL Databases..
     def show_databases(self):
+        print(f"self.conn = {self.conn}")
+        print("here....")
 
+        if self.conn.is_connected():
+            print("True")
+        else:
+            print("False")
         if self.conn and self.conn.is_connected():
             with self.conn.cursor() as cursor:
                 show_db = cursor.execute("show databases")
                 rows = cursor.fetchall()
                 for row in rows:
                     print(row)
-            self.conn.close()
+            # self.conn.close()
 
+    # Creates a database.
+    # It takes database in the form of a list passed in .env file..
     def create_Database(self, database):
         self.database = database
 
         # accept conn from create_Connection() function
         # If connection is established and db is connected
+
         if self.conn and self.conn.is_connected():
             with self.conn.cursor() as cursor:
-                db_create = cursor.execute(f"create database {self.database}")
-            self.conn.close()
+                for db in self.database:
+                    db_create = cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db}")
+                    print(f"Created database : {db}")
+            # self.conn.close()
     
+    # Drops specified database...
     def drop_Database(self, database):
         self.database = database
 
         if self.conn and self.conn.is_connected():
             with self.conn.cursor() as cursor:
                 db_drop = cursor.execute(f"drop database {self.database}")
-            self.conn.close()
+            # self.conn.close()
     
+    # Creates tables in DB...
     def create_table(self):
         pass
 
+    # Inserts values in the table...
     def insert_into_table(self):
         pass
-    
 
-conn = SQLConnection(host, user, password)
-conn.create_Connection()
-# # conn.create_Database("test")
-# # conn.drop_Database("test1")
-conn.show_databases()
